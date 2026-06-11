@@ -17,6 +17,13 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: alpha
 
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  base-url: https://api.openai.com
+  model: gpt-4o
+  temperature: 0.3
+  max-tokens: 2000
+
 management:
   endpoints:
     web:

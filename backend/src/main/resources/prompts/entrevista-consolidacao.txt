@@ -1,0 +1,22 @@
+Com base na entrevista a seguir, gere um Sumário Estruturado de Levantamento.
+
+IMPORTANTE:
+- Extraia APENAS informações que foram explicitamente mencionadas na entrevista
+- Para campos sem informação, escreva "Não identificado na entrevista"
+- Seja preciso e objetivo
+- Responda em português do Brasil
+
+Gere o sumário EXATAMENTE neste formato JSON (sem markdown, sem explicações, apenas o JSON):
+
+{
+  "contexto": "Descrição do problema/oportunidade e contexto atual",
+  "usuariosIdentificados": "Lista de perfis de usuário e suas responsabilidades",
+  "processoAtual": "Descrição do processo AS-IS (como funciona hoje)",
+  "necessidades": "Lista das principais necessidades e funcionalidades identificadas",
+  "regrasNegocio": "Regras de negócio, normas e legislação identificadas",
+  "integracoes": "Sistemas e integrações necessárias identificadas",
+  "restricoesPremissas": "Restrições, premissas e dependências identificadas",
+  "informacoesAusentes": "Informações que ainda precisam ser coletadas para completar o levantamento"
+}
+
+ENTREVISTA:
