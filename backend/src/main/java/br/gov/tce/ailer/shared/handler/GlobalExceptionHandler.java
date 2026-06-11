@@ -1,0 +1,51 @@
+package br.gov.tce.ailer.shared.handler;
+
+import br.gov.tce.ailer.shared.dto.ErroResponse;
+import br.gov.tce.ailer.shared.exception.BusinessException;
+import br.gov.tce.ailer.shared.exception.RecursoNaoEncontradoException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
+
+@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RecursoNaoEncontradoException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErroResponse handleNaoEncontrado(RecursoNaoEncontradoException ex, HttpServletRequest req) {
+        return ErroResponse.of(404, "Não encontrado", ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErroResponse handleBusiness(BusinessException ex, HttpServletRequest req) {
+        return ErroResponse.of(422, "Regra de negócio", ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResponse handleValidacao(MethodArgumentNotValidException ex, HttpServletRequest req) {
+        List<ErroResponse.CampoErro> campos = ex.getBindingResult().getAllErrors().stream()
+                .map(e -> {
+                    String campo = e instanceof FieldError fe ? fe.getField() : e.getObjectName();
+                    return new ErroResponse.CampoErro(campo, e.getDefaultMessage());
+                })
+                .toList();
+        return ErroResponse.ofCampos(400, "Dados inválidos na requisição", req.getRequestURI(), campos);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErroResponse handleGeneral(Exception ex, HttpServletRequest req) {
+        log.error("Erro inesperado: {}", ex.getMessage(), ex);
+        return ErroResponse.of(500, "Erro interno", "Ocorreu um erro inesperado. Tente novamente.", req.getRequestURI());
+    }
+}
