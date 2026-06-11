@@ -73,8 +73,6 @@ export function DetalheDemandaPage() {
       buscarHistorico(id).then((r) => setHistorico(r.data))
   }, [tab, id, historico])
 
-  const reload = () => id && buscarDemanda(id).then((r) => setDemanda(r.data))
-
   async function handleEditar(values: CriarDemandaPayload) {
     if (!id) return
     const r = await atualizarDemanda(id, values)
@@ -147,6 +145,13 @@ export function DetalheDemandaPage() {
         <span className="text-sm font-medium text-slate-700 truncate flex-1">{demanda.titulo}</span>
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => navigate(`/demandas/${id}/canvas`)}
+            className="flex items-center gap-1 px-3 py-1.5 border border-teal-200 text-teal-700 rounded-lg text-xs font-medium hover:bg-teal-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+            </svg>
+            Canvas
+          </button>
           <button onClick={handleIniciarEntrevista} disabled={iniciando}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 disabled:opacity-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

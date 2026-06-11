@@ -51,6 +51,20 @@ export function buscarHistorico(demandaId: string, page = 0) {
   return api.get(`/demandas/${demandaId}/historico`, { params: { page, size: 20 } })
 }
 
+// --- Módulo 3: Canvas ---
+
+export function gerarCanvas(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/canvas`)
+}
+
+export function buscarCanvas(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/canvas`)
+}
+
+export function atualizarCanvas(canvasId: string, payload: Record<string, string | undefined>) {
+  return api.put(`/canvas/${canvasId}`, payload)
+}
+
 // --- Módulo 2: Entrevistas ---
 
 export function criarEntrevista(demandaId: string) {
