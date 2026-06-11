@@ -101,7 +101,7 @@ export function EntrevistaPage() {
       {/* Header */}
       <header className="bg-blue-700 text-white px-6 py-4 shadow flex items-center gap-4">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/demandas')}
           aria-label="Voltar"
           className="text-blue-200 hover:text-white transition-colors"
         >
@@ -198,10 +198,10 @@ export function EntrevistaPage() {
         <div className="border-t border-gray-200 bg-gray-100 p-4 text-center text-sm text-gray-500">
           Entrevista concluída.{' '}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/demandas')}
             className="text-blue-600 hover:underline"
           >
-            Voltar ao início
+            Voltar às Demandas
           </button>
         </div>
       )}
