@@ -8,7 +8,7 @@ import br.gov.tce.ailer.modulo4.service.ChecklistCoberturaService;
 import br.gov.tce.ailer.modulo4.service.DuplicatasService;
 import br.gov.tce.ailer.modulo4.service.RequisitoService;
 import br.gov.tce.ailer.modulo4.service.SmartScoreService;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.MediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -96,15 +96,17 @@ public class RequisitoController {
         return ResponseEntity.ok(smartScoreService.avaliar(id));
     }
 
-    @PostMapping("/demandas/{demandaId}/requisitos/checklist-cobertura")
+    @PostMapping(value = "/demandas/{demandaId}/requisitos/checklist-cobertura",
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Verificar cobertura dos domínios essenciais nos requisitos da demanda")
-    public ResponseEntity<JsonNode> checklistCobertura(@PathVariable UUID demandaId) {
+    public ResponseEntity<String> checklistCobertura(@PathVariable UUID demandaId) {
         return ResponseEntity.ok(checklistCoberturaService.avaliar(demandaId));
     }
 
-    @PostMapping("/demandas/{demandaId}/requisitos/detectar-duplicatas")
+    @PostMapping(value = "/demandas/{demandaId}/requisitos/detectar-duplicatas",
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Detectar requisitos semanticamente similares ou duplicados")
-    public ResponseEntity<JsonNode> detectarDuplicatas(@PathVariable UUID demandaId) {
+    public ResponseEntity<String> detectarDuplicatas(@PathVariable UUID demandaId) {
         return ResponseEntity.ok(duplicatasService.detectar(demandaId));
     }
 }

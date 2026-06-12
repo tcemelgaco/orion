@@ -5,7 +5,6 @@ import br.gov.tce.ailer.ai.client.OpenAIClient;
 import br.gov.tce.ailer.modulo4.domain.Requisito;
 import br.gov.tce.ailer.modulo4.repository.RequisitoRepository;
 import br.gov.tce.ailer.shared.exception.BusinessException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class DuplicatasService {
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public JsonNode detectar(UUID demandaId) {
+    public String detectar(UUID demandaId) {
         List<Requisito> requisitos = requisitoRepo.findByDemandaIdOrderByTipoAscOrdemExibicaoAsc(demandaId);
         if (requisitos.size() < 2) {
             throw new BusinessException("São necessários ao menos 2 requisitos para detectar duplicatas.");
@@ -44,7 +43,7 @@ public class DuplicatasService {
                 ChatMessage.user(prompt + lista)
         ));
 
-        return parseJson(jsonResp);
+        return extrairJson(jsonResp);
     }
 
     private String buildLista(List<Requisito> requisitos) {
@@ -57,14 +56,15 @@ public class DuplicatasService {
         return sb.toString();
     }
 
-    private JsonNode parseJson(String json) {
-        String limpo = json.strip();
+    private String extrairJson(String raw) {
+        String limpo = raw.strip();
         if (limpo.startsWith("```")) {
             int ini = limpo.indexOf('{'), fim = limpo.lastIndexOf('}');
             if (ini >= 0 && fim > ini) limpo = limpo.substring(ini, fim + 1);
         }
         try {
-            return objectMapper.readTree(limpo);
+            objectMapper.readTree(limpo); // valida JSON
+            return limpo;
         } catch (IOException e) {
             log.error("Falha ao parsear detecção de duplicatas: {}", limpo, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
