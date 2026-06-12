@@ -8,31 +8,31 @@ import { ScoreBadge } from '../components/ui/ScoreBadge'
 import type { StatusAprovacao } from '../types/canvas'
 
 const PRIORIDADE_COLORS: Record<PrioridadeBacklog, string> = {
-  ALTA:  'bg-red-100 text-red-700 ring-red-200',
-  MEDIA: 'bg-yellow-100 text-yellow-700 ring-yellow-200',
-  BAIXA: 'bg-green-100 text-green-700 ring-green-200',
+  ALTA:  'bg-red-600 text-white ring-red-700',
+  MEDIA: 'bg-amber-500 text-white ring-amber-600',
+  BAIXA: 'bg-emerald-600 text-white ring-emerald-700',
 }
 
 const STATUS_HISTORIA: Record<StatusHistoria, { label: string; color: string }> = {
-  BACKLOG:      { label: 'Backlog',      color: 'bg-gray-100 text-gray-600' },
-  PRONTO:       { label: 'Pronto',       color: 'bg-blue-100 text-blue-700' },
-  EM_ANDAMENTO: { label: 'Em Andamento', color: 'bg-amber-100 text-amber-700' },
-  CONCLUIDO:    { label: 'Concluído',    color: 'bg-green-100 text-green-700' },
-  CANCELADO:    { label: 'Cancelado',    color: 'bg-red-50 text-red-400' },
+  BACKLOG:      { label: 'Backlog',      color: 'bg-slate-500 text-white' },
+  PRONTO:       { label: 'Pronto',       color: 'bg-sky-600 text-white' },
+  EM_ANDAMENTO: { label: 'Em Andamento', color: 'bg-amber-600 text-white' },
+  CONCLUIDO:    { label: 'Concluído',    color: 'bg-emerald-600 text-white' },
+  CANCELADO:    { label: 'Cancelado',    color: 'bg-red-600 text-white' },
 }
 
 const SP_COLORS: Record<number, string> = {
-  1: 'bg-emerald-100 text-emerald-700',
-  2: 'bg-emerald-100 text-emerald-700',
-  3: 'bg-blue-100 text-blue-700',
-  5: 'bg-indigo-100 text-indigo-700',
-  8: 'bg-amber-100 text-amber-700',
-  13: 'bg-red-100 text-red-700',
+  1:  'bg-emerald-600 text-white',
+  2:  'bg-emerald-600 text-white',
+  3:  'bg-sky-600 text-white',
+  5:  'bg-indigo-600 text-white',
+  8:  'bg-amber-600 text-white',
+  13: 'bg-red-600 text-white',
 }
 
 function spColor(sp: number | null) {
-  if (!sp) return 'bg-gray-100 text-gray-500'
-  return SP_COLORS[sp] ?? 'bg-gray-100 text-gray-500'
+  if (!sp) return 'bg-slate-500 text-white'
+  return SP_COLORS[sp] ?? 'bg-slate-500 text-white'
 }
 
 function totalSP(epicos: Epico[]) {

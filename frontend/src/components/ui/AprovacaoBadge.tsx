@@ -6,27 +6,31 @@ interface Props {
   aprovadoEm?: string | null
 }
 
-const config: Record<StatusAprovacao, { label: string; classes: string }> = {
+const config: Record<StatusAprovacao, { label: string; dot: string; classes: string }> = {
   RASCUNHO_IA: {
     label: 'Rascunho IA',
-    classes: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700',
+    dot: 'bg-amber-300',
+    classes: 'bg-amber-600 text-white border border-amber-700',
   },
   EM_REVISAO: {
     label: 'Em Revisão',
-    classes: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-300 dark:border-blue-700',
+    dot: 'bg-sky-300',
+    classes: 'bg-sky-600 text-white border border-sky-700',
   },
   APROVADO: {
     label: 'Aprovado',
-    classes: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-300 dark:border-green-700',
+    dot: 'bg-emerald-300',
+    classes: 'bg-emerald-600 text-white border border-emerald-700',
   },
   PUBLICADO: {
     label: 'Publicado',
-    classes: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-300 dark:border-purple-700',
+    dot: 'bg-violet-300',
+    classes: 'bg-violet-600 text-white border border-violet-700',
   },
 }
 
 export function AprovacaoBadge({ status, aprovadoPor, aprovadoEm }: Props) {
-  const { label, classes } = config[status] ?? config.RASCUNHO_IA
+  const { label, dot, classes } = config[status] ?? config.RASCUNHO_IA
   const tooltip =
     aprovadoPor && aprovadoEm
       ? `Aprovado por ${aprovadoPor} em ${new Date(aprovadoEm).toLocaleDateString('pt-BR')}`
@@ -34,13 +38,10 @@ export function AprovacaoBadge({ status, aprovadoPor, aprovadoEm }: Props) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${classes}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${classes}`}
       title={tooltip}
     >
-      {status === 'RASCUNHO_IA' && <span>🤖</span>}
-      {status === 'EM_REVISAO' && <span>✏️</span>}
-      {status === 'APROVADO' && <span>✅</span>}
-      {status === 'PUBLICADO' && <span>🚀</span>}
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
       {label}
     </span>
   )

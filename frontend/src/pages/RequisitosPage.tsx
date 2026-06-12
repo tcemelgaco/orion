@@ -22,18 +22,18 @@ const TIPOS: { key: TipoRequisito | 'TODOS'; label: string; desc: string; color:
 ]
 
 const PRIORIDADE_COLORS: Record<PrioridadeRequisito, string> = {
-  ALTA:  'bg-red-100 text-red-700 ring-red-200',
-  MEDIA: 'bg-yellow-100 text-yellow-700 ring-yellow-200',
-  BAIXA: 'bg-green-100 text-green-700 ring-green-200',
+  ALTA:  'bg-red-600 text-white ring-red-700',
+  MEDIA: 'bg-amber-500 text-white ring-amber-600',
+  BAIXA: 'bg-emerald-600 text-white ring-emerald-700',
 }
 
 const STATUS_COLORS: Record<StatusRequisito, string> = {
-  RASCUNHO:    'bg-gray-100 text-gray-600',
-  RASCUNHO_IA: 'bg-yellow-100 text-yellow-700',
-  EM_REVISAO:  'bg-blue-100 text-blue-700',
-  APROVADO:    'bg-green-100 text-green-700',
-  PUBLICADO:   'bg-purple-100 text-purple-700',
-  OBSOLETO:    'bg-red-50 text-red-400 line-through',
+  RASCUNHO:    'bg-slate-500 text-white',
+  RASCUNHO_IA: 'bg-amber-600 text-white',
+  EM_REVISAO:  'bg-sky-600 text-white',
+  APROVADO:    'bg-emerald-600 text-white',
+  PUBLICADO:   'bg-violet-600 text-white',
+  OBSOLETO:    'bg-red-600 text-white line-through opacity-70',
 }
 
 const APPROVAL_STATUSES = new Set<StatusRequisito>(['RASCUNHO_IA', 'EM_REVISAO', 'APROVADO', 'PUBLICADO'])
