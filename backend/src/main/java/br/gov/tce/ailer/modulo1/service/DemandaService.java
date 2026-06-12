@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -59,8 +60,20 @@ public class DemandaService {
 
     @Transactional(readOnly = true)
     public Page<DemandaSummaryResponse> listar(StatusDemanda status, String area, String busca, Pageable pageable) {
-        return demandaRepository.buscar(status, area, busca, pageable)
-                .map(DemandaSummaryResponse::from);
+        Specification<Demanda> spec = (root, query, cb) -> cb.conjunction();
+        if (status != null) {
+            spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), status));
+        }
+        if (area != null && !area.isBlank()) {
+            spec = spec.and((r, q, cb) -> cb.like(cb.lower(r.get("areaDemandante")), "%" + area.toLowerCase() + "%"));
+        }
+        if (busca != null && !busca.isBlank()) {
+            spec = spec.and((r, q, cb) -> cb.or(
+                    cb.like(cb.lower(r.get("titulo")), "%" + busca.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("descricao")), "%" + busca.toLowerCase() + "%")
+            ));
+        }
+        return demandaRepository.findAll(spec, pageable).map(DemandaSummaryResponse::from);
     }
 
     @Transactional(readOnly = true)

@@ -48,7 +48,7 @@ export function DemandasPage() {
     if (busca.trim()) params.busca = busca.trim()
     buscarDemandas(params)
       .then((res) => setData(res.data))
-      .catch(() => setErro('Backend indisponível. Verifique se o servidor está ativo na porta 8080.'))
+      .catch((e) => setErro(e?.response?.data?.mensagem ?? 'Não foi possível carregar as demandas. Verifique a conexão e tente novamente.'))
       .finally(() => setLoading(false))
   }, [busca, status, area, page])
 
