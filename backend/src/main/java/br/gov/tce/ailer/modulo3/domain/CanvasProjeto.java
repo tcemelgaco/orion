@@ -1,9 +1,11 @@
 package br.gov.tce.ailer.modulo3.domain;
 
+import br.gov.tce.ailer.shared.domain.enums.StatusAprovacao;
 import br.gov.tce.ailer.shared.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Getter
@@ -51,4 +53,15 @@ public class CanvasProjeto extends BaseEntity {
     @Column(name = "gerado_por_ia", nullable = false)
     @Builder.Default
     private Boolean geradoPorIa = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_aprovacao", nullable = false, length = 20)
+    @Builder.Default
+    private StatusAprovacao statusAprovacao = StatusAprovacao.RASCUNHO_IA;
+
+    @Column(name = "aprovado_por", length = 150)
+    private String aprovadoPor;
+
+    @Column(name = "aprovado_em")
+    private OffsetDateTime aprovadoEm;
 }

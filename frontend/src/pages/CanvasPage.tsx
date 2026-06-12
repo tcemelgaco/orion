@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { AppLayout } from '../components/layout/AppLayout'
-import { buscarCanvas, gerarCanvas, atualizarCanvas } from '../services/api'
+import { buscarCanvas, gerarCanvas, atualizarCanvas, revisarCanvas, aprovarCanvas, publicarCanvas } from '../services/api'
 import type { CanvasProjeto } from '../types/canvas'
+import { AprovacaoBadge } from '../components/ui/AprovacaoBadge'
+import { AprovacaoBotoes } from '../components/ui/AprovacaoBotoes'
 
 interface Section {
   key: keyof CanvasProjeto
@@ -65,7 +67,10 @@ function CanvasCard({
   const [draft, setDraft] = useState(value ?? '')
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => { setDraft(value ?? '') }, [value])
+  useEffect(() => {
+    const t = setTimeout(() => setDraft(value ?? ''), 0)
+    return () => clearTimeout(t)
+  }, [value])
 
   async function handleSave() {
     setSaving(true)
@@ -177,13 +182,20 @@ export function CanvasPage() {
           {canvas?.tituloDemanda ?? 'Canvas do Projeto'}
         </span>
         <span className="text-[11px] font-bold uppercase tracking-widest text-teal-600 bg-teal-50 px-2 py-0.5 rounded">Módulo 3</span>
-        {canvas?.geradoPorIa && (
-          <span className="flex items-center gap-1 text-[11px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
-            Gerado por IA
-          </span>
+        {canvas && (
+          <AprovacaoBadge
+            status={canvas.statusAprovacao}
+            aprovadoPor={canvas.aprovadoPor}
+            aprovadoEm={canvas.aprovadoEm}
+          />
+        )}
+        {canvas && canvas.statusAprovacao !== 'PUBLICADO' && (
+          <AprovacaoBotoes
+            status={canvas.statusAprovacao}
+            onRevisar={async () => { const r = await revisarCanvas(canvas.id); setCanvas(r.data) }}
+            onAprovar={async () => { const r = await aprovarCanvas(canvas.id); setCanvas(r.data) }}
+            onPublicar={async () => { const r = await publicarCanvas(canvas.id); setCanvas(r.data) }}
+          />
         )}
         <button onClick={handleGerar} disabled={gerando}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 disabled:opacity-60 transition-colors">

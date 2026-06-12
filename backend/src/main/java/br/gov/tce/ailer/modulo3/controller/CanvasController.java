@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -37,5 +39,25 @@ public class CanvasController {
             @PathVariable UUID canvasId,
             @RequestBody AtualizarCanvasRequest request) {
         return ResponseEntity.ok(canvasService.atualizar(canvasId, request));
+    }
+
+    @PatchMapping("/canvas/{canvasId}/revisar")
+    @Operation(summary = "Abrir canvas para revisão (RASCUNHO_IA → EM_REVISAO)")
+    public ResponseEntity<CanvasProjetoResponse> abrirRevisao(@PathVariable UUID canvasId) {
+        return ResponseEntity.ok(canvasService.abrirRevisao(canvasId));
+    }
+
+    @PatchMapping("/canvas/{canvasId}/aprovar")
+    @Operation(summary = "Aprovar canvas formalmente (EM_REVISAO → APROVADO)")
+    public ResponseEntity<CanvasProjetoResponse> aprovar(
+            @PathVariable UUID canvasId,
+            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(canvasService.aprovar(canvasId, user.getUsername()));
+    }
+
+    @PatchMapping("/canvas/{canvasId}/publicar")
+    @Operation(summary = "Publicar canvas para a equipe de desenvolvimento (APROVADO → PUBLICADO)")
+    public ResponseEntity<CanvasProjetoResponse> publicar(@PathVariable UUID canvasId) {
+        return ResponseEntity.ok(canvasService.publicar(canvasId));
     }
 }

@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -64,8 +67,26 @@ public class OpenAIClient {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                log.error("OpenAI API retornou status {}: {}", response.statusCode(), response.body());
+                if (response.statusCode() == 429) {
+                    boolean quotaEsgotada = response.body().contains("insufficient_quota");
+                    String msg = quotaEsgotada
+                            ? "Cota da OpenAI esgotada. Adicione créditos em platform.openai.com/settings/billing."
+                            : "Limite de requisições da OpenAI atingido. Aguarde alguns instantes e tente novamente.";
+                    throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, msg);
+                }
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "Erro na comunicação com a OpenAI (status " + response.statusCode() + ")");
+            }
             JsonNode root = objectMapper.readTree(response.body());
-            return root.path("choices").get(0).path("message").path("content").asText();
+            JsonNode choices = root.path("choices");
+            if (!choices.isArray() || choices.isEmpty()) {
+                log.error("Resposta OpenAI sem choices: {}", response.body());
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "Resposta inválida da OpenAI: sem conteúdo gerado.");
+            }
+            return choices.get(0).path("message").path("content").asText();
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Erro ao comunicar com OpenAI API", e);

@@ -1,3 +1,5 @@
+export type StatusAprovacao = 'RASCUNHO_IA' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO'
+
 export interface CanvasProjeto {
   id: string
   demandaId: string
@@ -13,6 +15,9 @@ export interface CanvasProjeto {
   criteriosSucesso?: string
   integracoes?: string
   geradoPorIa: boolean
+  statusAprovacao: StatusAprovacao
+  aprovadoPor: string | null
+  aprovadoEm: string | null
   criadoEm: string
   atualizadoEm: string
 }

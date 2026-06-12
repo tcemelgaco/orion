@@ -1,5 +1,8 @@
 import axios from 'axios'
 import type { CriarDemandaPayload, AdicionarStakeholderPayload } from '../types/demanda'
+import type { CriarRequisitoPayload, AtualizarRequisitoPayload, TipoRequisito } from '../types/requisito'
+import type { AtualizarHistoriaPayload } from '../types/backlog'
+import type { TipoArtefato } from '../types/artefato'
 
 const credentials = btoa('analista:ailer@dev')
 
@@ -63,6 +66,116 @@ export function buscarCanvas(demandaId: string) {
 
 export function atualizarCanvas(canvasId: string, payload: Record<string, string | undefined>) {
   return api.put(`/canvas/${canvasId}`, payload)
+}
+
+export function revisarCanvas(canvasId: string) {
+  return api.patch(`/canvas/${canvasId}/revisar`)
+}
+
+export function aprovarCanvas(canvasId: string) {
+  return api.patch(`/canvas/${canvasId}/aprovar`)
+}
+
+export function publicarCanvas(canvasId: string) {
+  return api.patch(`/canvas/${canvasId}/publicar`)
+}
+
+// --- Módulo 4: Requisitos ---
+
+export function gerarRequisitos(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/requisitos/gerar`)
+}
+
+export function listarRequisitos(demandaId: string, tipo?: TipoRequisito) {
+  return api.get(`/demandas/${demandaId}/requisitos`, { params: tipo ? { tipo } : {} })
+}
+
+export function criarRequisito(demandaId: string, payload: CriarRequisitoPayload) {
+  return api.post(`/demandas/${demandaId}/requisitos`, payload)
+}
+
+export function atualizarRequisito(id: string, payload: AtualizarRequisitoPayload) {
+  return api.put(`/requisitos/${id}`, payload)
+}
+
+export function excluirRequisito(id: string) {
+  return api.delete(`/requisitos/${id}`)
+}
+
+export function revisarRequisito(id: string) {
+  return api.patch(`/requisitos/${id}/revisar`)
+}
+
+export function aprovarRequisito(id: string) {
+  return api.patch(`/requisitos/${id}/aprovar`)
+}
+
+export function publicarRequisito(id: string) {
+  return api.patch(`/requisitos/${id}/publicar`)
+}
+
+export function avaliarSmartRequisito(id: string) {
+  return api.post(`/requisitos/${id}/avaliar-smart`)
+}
+
+// --- Exportação DOCX / PDF ---
+
+export async function exportarDocx(demandaId: string): Promise<void> {
+  const resp = await api.get(`/demandas/${demandaId}/exportar/docx`, { responseType: 'blob' })
+  const url = URL.createObjectURL(new Blob([resp.data]))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `especificacao-${demandaId}.docx`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+export async function exportarPdf(demandaId: string): Promise<void> {
+  const resp = await api.get(`/demandas/${demandaId}/exportar/pdf`, { responseType: 'blob' })
+  const url = URL.createObjectURL(new Blob([resp.data], { type: 'application/pdf' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `especificacao-${demandaId}.pdf`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+// --- Módulo 5: Backlog ---
+
+export function gerarBacklog(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/backlog/gerar`)
+}
+
+export function listarBacklog(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/backlog`)
+}
+
+export function atualizarHistoria(id: string, payload: AtualizarHistoriaPayload) {
+  return api.put(`/historias/${id}`, payload)
+}
+
+export function excluirHistoria(id: string) {
+  return api.delete(`/historias/${id}`)
+}
+
+export function revisarEpico(id: string) {
+  return api.patch(`/epicos/${id}/revisar`)
+}
+
+export function aprovarEpico(id: string) {
+  return api.patch(`/epicos/${id}/aprovar`)
+}
+
+export function publicarEpico(id: string) {
+  return api.patch(`/epicos/${id}/publicar`)
+}
+
+export function avaliarInvestHistoria(id: string) {
+  return api.post(`/historias/${id}/avaliar-invest`)
 }
 
 // --- Módulo 2: Entrevistas ---
@@ -139,4 +252,41 @@ export function streamMensagem(
       onDone()
     })
     .catch((err) => onError(err.message))
+}
+
+// --- Repositório de Artefatos ---
+
+export function listarArtefatos(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/artefatos`)
+}
+
+export function uploadArtefato(
+  demandaId: string,
+  file: File,
+  tipo: TipoArtefato,
+  descricao: string,
+) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('tipo', tipo)
+  if (descricao) formData.append('descricao', descricao)
+  return axios.post(`/api/v1/demandas/${demandaId}/artefatos`, formData, {
+    headers: { Authorization: `Basic ${credentials}` },
+  })
+}
+
+export async function downloadArtefato(artefatoId: string, nomeOriginal: string): Promise<void> {
+  const resp = await api.get(`/artefatos/${artefatoId}/download`, { responseType: 'blob' })
+  const url = URL.createObjectURL(new Blob([resp.data]))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = nomeOriginal
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+export function excluirArtefato(artefatoId: string) {
+  return api.delete(`/artefatos/${artefatoId}`)
 }

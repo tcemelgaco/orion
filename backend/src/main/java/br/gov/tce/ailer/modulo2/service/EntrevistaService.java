@@ -68,7 +68,7 @@ public class EntrevistaService {
         salvarMensagem(entrevista, RoleMensagem.SYSTEM, systemPrompt + "\n\n" + contextoDemanda);
 
         log.info("Entrevista iniciada: id={}, demanda={}", entrevista.getId(), demandaId);
-        return EntrevistaResponse.from(entrevista);
+        return EntrevistaResponse.from(encontrarEntrevistaComDetalhes(entrevista.getId()));
     }
 
     public SseEmitter enviarMensagem(UUID entrevistaId, EnviarMensagemRequest req) {
@@ -91,12 +91,12 @@ public class EntrevistaService {
 
     @Transactional(readOnly = true)
     public EntrevistaResponse buscar(UUID id) {
-        return EntrevistaResponse.from(encontrarEntrevista(id));
+        return EntrevistaResponse.from(encontrarEntrevistaComDetalhes(id));
     }
 
     @Transactional
     public SumarioResponse consolidar(UUID entrevistaId) {
-        Entrevista entrevista = encontrarEntrevista(entrevistaId);
+        Entrevista entrevista = encontrarEntrevistaComDetalhes(entrevistaId);
 
         if (entrevista.getStatus() == StatusEntrevista.CANCELADA) {
             throw new BusinessException("Entrevista cancelada não pode ser consolidada.");
@@ -138,7 +138,7 @@ public class EntrevistaService {
 
         salvarMensagem(entrevista, RoleMensagem.USER, conteudoUsuario);
 
-        List<ChatMessage> historico = entrevista.getMensagens().stream()
+        List<ChatMessage> historico = mensagemRepository.findByEntrevistaIdOrderByCriadoEmAsc(entrevistaId).stream()
                 .map(m -> new ChatMessage(m.getRole().name().toLowerCase(), m.getConteudo()))
                 .toList();
 
@@ -176,6 +176,11 @@ public class EntrevistaService {
 
     private Entrevista encontrarEntrevista(UUID id) {
         return entrevistaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Entrevista", id));
+    }
+
+    private Entrevista encontrarEntrevistaComDetalhes(UUID id) {
+        return entrevistaRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Entrevista", id));
     }
 

@@ -12,6 +12,8 @@ import br.gov.tce.ailer.modulo3.domain.CanvasProjeto;
 import br.gov.tce.ailer.modulo3.dto.request.AtualizarCanvasRequest;
 import br.gov.tce.ailer.modulo3.dto.response.CanvasProjetoResponse;
 import br.gov.tce.ailer.modulo3.repository.CanvasProjetoRepository;
+import br.gov.tce.ailer.shared.domain.enums.StatusAprovacao;
+import br.gov.tce.ailer.shared.exception.BusinessException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -107,6 +110,43 @@ public class CanvasService {
         canvas.setGeradoPorIa(false);
 
         return CanvasProjetoResponse.from(canvasRepo.save(canvas), demanda.getTitulo());
+    }
+
+    @Transactional
+    public CanvasProjetoResponse abrirRevisao(UUID canvasId) {
+        CanvasProjeto canvas = findCanvas(canvasId);
+        canvas.setStatusAprovacao(StatusAprovacao.EM_REVISAO);
+        Demanda demanda = demandaRepo.findById(canvas.getDemandaId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Demanda não encontrada"));
+        return CanvasProjetoResponse.from(canvasRepo.save(canvas), demanda.getTitulo());
+    }
+
+    @Transactional
+    public CanvasProjetoResponse aprovar(UUID canvasId, String aprovadoPor) {
+        CanvasProjeto canvas = findCanvas(canvasId);
+        canvas.setStatusAprovacao(StatusAprovacao.APROVADO);
+        canvas.setAprovadoPor(aprovadoPor);
+        canvas.setAprovadoEm(OffsetDateTime.now());
+        Demanda demanda = demandaRepo.findById(canvas.getDemandaId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Demanda não encontrada"));
+        return CanvasProjetoResponse.from(canvasRepo.save(canvas), demanda.getTitulo());
+    }
+
+    @Transactional
+    public CanvasProjetoResponse publicar(UUID canvasId) {
+        CanvasProjeto canvas = findCanvas(canvasId);
+        if (canvas.getStatusAprovacao() != StatusAprovacao.APROVADO) {
+            throw new BusinessException("Canvas deve estar APROVADO antes de publicar.");
+        }
+        canvas.setStatusAprovacao(StatusAprovacao.PUBLICADO);
+        Demanda demanda = demandaRepo.findById(canvas.getDemandaId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Demanda não encontrada"));
+        return CanvasProjetoResponse.from(canvasRepo.save(canvas), demanda.getTitulo());
+    }
+
+    private CanvasProjeto findCanvas(UUID canvasId) {
+        return canvasRepo.findById(canvasId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Canvas não encontrado"));
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────
