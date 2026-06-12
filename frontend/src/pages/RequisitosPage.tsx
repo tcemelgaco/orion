@@ -5,6 +5,7 @@ import {
   listarRequisitos, gerarRequisitos, criarRequisito,
   atualizarRequisito, excluirRequisito, buscarDemanda,
   revisarRequisito, aprovarRequisito, publicarRequisito, avaliarSmartRequisito,
+  checklistCobertura, detectarDuplicatas,
 } from '../services/api'
 import type { Requisito, TipoRequisito, StatusRequisito, PrioridadeRequisito } from '../types/requisito'
 import { AprovacaoBadge } from '../components/ui/AprovacaoBadge'
@@ -69,6 +70,8 @@ export function RequisitosPage() {
   const [editValues, setEditValues] = useState<Partial<Requisito>>({})
   const [expandido, setExpandido] = useState<Set<string>>(new Set())
   const [loadingSmartId, setLoadingSmartId] = useState<string | null>(null)
+  const [painel, setPainel] = useState<{ tipo: 'cobertura' | 'duplicatas'; dados: unknown } | null>(null)
+  const [loadingPainel, setLoadingPainel] = useState<'cobertura' | 'duplicatas' | null>(null)
 
   const carregar = useCallback(async () => {
     if (!demandaId) return
@@ -163,6 +166,28 @@ export function RequisitosPage() {
     }
   }
 
+  const handleCobertura = async () => {
+    if (!demandaId) return
+    setLoadingPainel('cobertura')
+    try {
+      const resp = await checklistCobertura(demandaId)
+      setPainel({ tipo: 'cobertura', dados: resp.data })
+    } finally {
+      setLoadingPainel(null)
+    }
+  }
+
+  const handleDuplicatas = async () => {
+    if (!demandaId) return
+    setLoadingPainel('duplicatas')
+    try {
+      const resp = await detectarDuplicatas(demandaId)
+      setPainel({ tipo: 'duplicatas', dados: resp.data })
+    } finally {
+      setLoadingPainel(null)
+    }
+  }
+
   const toggleExpand = (id: string) => {
     setExpandido(prev => {
       const next = new Set(prev)
@@ -193,7 +218,37 @@ export function RequisitosPage() {
               </nav>
               <h1 className="text-xl font-bold text-gray-900">Especificação de Requisitos</h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              {requisitos.length > 0 && (
+                <>
+                  <button
+                    onClick={handleCobertura}
+                    disabled={loadingPainel !== null}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-teal-300 text-teal-700 text-sm font-medium hover:bg-teal-50 disabled:opacity-50"
+                    title="Verificar se domínios essenciais estão cobertos"
+                  >
+                    {loadingPainel === 'cobertura' ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                    )}
+                    Cobertura
+                  </button>
+                  <button
+                    onClick={handleDuplicatas}
+                    disabled={loadingPainel !== null}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-orange-300 text-orange-700 text-sm font-medium hover:bg-orange-50 disabled:opacity-50"
+                    title="Detectar requisitos semanticamente similares"
+                  >
+                    {loadingPainel === 'duplicatas' ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+                    )}
+                    Duplicatas
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => { setShowForm(true); setEditando(null) }}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50"
@@ -252,6 +307,80 @@ export function RequisitosPage() {
             })}
           </div>
         </div>
+
+        {/* Painel Cobertura / Duplicatas */}
+        {painel && (
+          <div className={`mx-6 mt-4 rounded-xl border p-5 shadow-sm ${
+            painel.tipo === 'cobertura' ? 'bg-teal-50 border-teal-200' : 'bg-orange-50 border-orange-200'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className={`text-sm font-semibold ${painel.tipo === 'cobertura' ? 'text-teal-800' : 'text-orange-800'}`}>
+                {painel.tipo === 'cobertura' ? 'Checklist de Cobertura' : 'Detecção de Duplicatas'}
+              </h3>
+              <button onClick={() => setPainel(null)} className="text-gray-400 hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {painel.tipo === 'cobertura' && (() => {
+              const dados = painel.dados as { dominios: { dominio: string; coberto: boolean; requisitosRelacionados: string[]; observacao: string }[]; scoreCobertura: number; recomendacao: string }
+              return (
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`text-lg font-bold px-3 py-1 rounded-full ${dados.scoreCobertura >= 70 ? 'bg-green-100 text-green-800' : dados.scoreCobertura >= 40 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                      {dados.scoreCobertura}%
+                    </span>
+                    <span className="text-sm text-gray-600">{dados.recomendacao}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                    {dados.dominios?.map((d) => (
+                      <div key={d.dominio} className={`rounded-lg p-2.5 text-xs border ${d.coberto ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                        <div className="flex items-center gap-1.5 font-semibold mb-1">
+                          {d.coberto ? '✓' : '✗'} {d.dominio}
+                        </div>
+                        <p className="text-[10px] opacity-80">{d.observacao}</p>
+                        {d.requisitosRelacionados.length > 0 && (
+                          <p className="text-[10px] mt-1 font-mono">{d.requisitosRelacionados.join(', ')}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {painel.tipo === 'duplicatas' && (() => {
+              const dados = painel.dados as { grupos: { requisitos: string[]; similaridade: number; tipo: string; justificativa: string }[]; totalGrupos: number; recomendacao: string }
+              return (
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">{dados.recomendacao}</p>
+                  {dados.grupos?.length === 0 ? (
+                    <p className="text-sm text-green-700 font-medium">Nenhuma duplicata identificada.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {dados.grupos?.map((g, i) => (
+                        <div key={i} className="bg-white rounded-lg border border-orange-200 p-3 text-xs">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            {g.requisitos.map(r => (
+                              <span key={r} className="font-mono bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded">{r}</span>
+                            ))}
+                            <span className={`px-2 py-0.5 rounded-full font-semibold ${g.similaridade >= 80 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                              {g.similaridade}% similar
+                            </span>
+                            <span className="text-gray-400">{g.tipo.replace(/_/g, ' ')}</span>
+                          </div>
+                          <p className="text-gray-600">{g.justificativa}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+          </div>
+        )}
 
         {/* Formulário novo requisito */}
         {showForm && (

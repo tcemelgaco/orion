@@ -17,6 +17,8 @@ public record SumarioResponse(
         String restricoesPremissas,
         String informacoesAusentes,
         String conteudoCompleto,
+        Integer suficiencia,
+        String avaliacaoSuficiencia,
         LocalDateTime criadoEm
 ) {
     public static SumarioResponse from(SumarioLevantamento s) {
@@ -26,7 +28,8 @@ public record SumarioResponse(
                 s.getProcessoAtual(), s.getNecessidades(),
                 s.getRegrasNegocio(), s.getIntegracoes(),
                 s.getRestricoesPremissas(), s.getInformacoesAusentes(),
-                s.getConteudoCompleto(), s.getCriadoEm()
+                s.getConteudoCompleto(), s.getSuficiencia(), s.getAvaliacaoSuficiencia(),
+                s.getCriadoEm()
         );
     }
 }

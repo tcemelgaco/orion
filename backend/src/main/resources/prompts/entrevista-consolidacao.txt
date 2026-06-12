@@ -16,7 +16,15 @@ Gere o sumário EXATAMENTE neste formato JSON (sem markdown, sem explicações, 
   "regrasNegocio": "Regras de negócio, normas e legislação identificadas",
   "integracoes": "Sistemas e integrações necessárias identificadas",
   "restricoesPremissas": "Restrições, premissas e dependências identificadas",
-  "informacoesAusentes": "Informações que ainda precisam ser coletadas para completar o levantamento"
+  "informacoesAusentes": "Informações que ainda precisam ser coletadas para completar o levantamento",
+  "suficiencia": <inteiro 0-100 indicando o grau de completude do levantamento>,
+  "avaliacaoSuficiencia": "Justificativa do score: o que foi bem coletado e o que está faltando para atingir 100%"
 }
+
+Critérios para o score de suficiência (0-100):
+- 0-30: Levantamento insuficiente, muitos gaps críticos
+- 31-60: Levantamento parcial, gaps importantes ainda presentes
+- 61-80: Levantamento razoável, pronto para começar mas com pontos a esclarecer
+- 81-100: Levantamento completo ou quase completo
 
 ENTREVISTA:

@@ -4,8 +4,11 @@ import br.gov.tce.ailer.modulo4.domain.enums.TipoRequisito;
 import br.gov.tce.ailer.modulo4.dto.request.AtualizarRequisitoRequest;
 import br.gov.tce.ailer.modulo4.dto.request.CriarRequisitoRequest;
 import br.gov.tce.ailer.modulo4.dto.response.RequisitoResponse;
+import br.gov.tce.ailer.modulo4.service.ChecklistCoberturaService;
+import br.gov.tce.ailer.modulo4.service.DuplicatasService;
 import br.gov.tce.ailer.modulo4.service.RequisitoService;
 import br.gov.tce.ailer.modulo4.service.SmartScoreService;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,6 +30,8 @@ public class RequisitoController {
 
     private final RequisitoService requisitoService;
     private final SmartScoreService smartScoreService;
+    private final ChecklistCoberturaService checklistCoberturaService;
+    private final DuplicatasService duplicatasService;
 
     @PostMapping("/demandas/{demandaId}/requisitos/gerar")
     @Operation(summary = "Gerar requisitos com IA para a demanda")
@@ -89,5 +94,17 @@ public class RequisitoController {
     @Operation(summary = "Avaliar qualidade SMART do requisito com IA")
     public ResponseEntity<RequisitoResponse> avaliarSmart(@PathVariable UUID id) {
         return ResponseEntity.ok(smartScoreService.avaliar(id));
+    }
+
+    @PostMapping("/demandas/{demandaId}/requisitos/checklist-cobertura")
+    @Operation(summary = "Verificar cobertura dos domínios essenciais nos requisitos da demanda")
+    public ResponseEntity<JsonNode> checklistCobertura(@PathVariable UUID demandaId) {
+        return ResponseEntity.ok(checklistCoberturaService.avaliar(demandaId));
+    }
+
+    @PostMapping("/demandas/{demandaId}/requisitos/detectar-duplicatas")
+    @Operation(summary = "Detectar requisitos semanticamente similares ou duplicados")
+    public ResponseEntity<JsonNode> detectarDuplicatas(@PathVariable UUID demandaId) {
+        return ResponseEntity.ok(duplicatasService.detectar(demandaId));
     }
 }

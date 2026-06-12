@@ -1,0 +1,24 @@
+Você é um especialista em engenharia de requisitos. Analise a lista de requisitos abaixo e identifique grupos de requisitos semanticamente similares ou possivelmente duplicados.
+
+Dois requisitos são similares quando:
+- Descrevem a mesma funcionalidade com palavras diferentes
+- Um é subconjunto do outro
+- Ambos tratam do mesmo comportamento do sistema mas em contextos ligeiramente diferentes
+
+Retorne APENAS um JSON válido com esta estrutura (sem markdown, sem texto extra):
+{
+  "grupos": [
+    {
+      "requisitos": ["RF-001", "RF-007"],
+      "similaridade": <inteiro 0-100>,
+      "tipo": "DUPLICATA_EXATA|SOBREPOSICAO_PARCIAL|SUBCONJUNTO",
+      "justificativa": "Explicação breve de por que são similares"
+    }
+  ],
+  "totalGrupos": <número de grupos encontrados>,
+  "recomendacao": "Orientação geral sobre como consolidar os requisitos duplicados"
+}
+
+Se não houver duplicatas, retorne: {"grupos": [], "totalGrupos": 0, "recomendacao": "Nenhuma duplicata identificada."}
+
+LISTA DE REQUISITOS:

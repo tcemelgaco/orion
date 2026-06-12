@@ -200,6 +200,8 @@ public class EntrevistaService {
                 jsonLimpo = jsonLimpo.replaceAll("```json\\n?", "").replaceAll("```\\n?", "").trim();
             }
             JsonNode node = objectMapper.readTree(jsonLimpo);
+            int suficiencia = node.path("suficiencia").isMissingNode() ? 50 : node.path("suficiencia").asInt(50);
+            String avaliacaoSuficiencia = node.path("avaliacaoSuficiencia").asText(null);
             return SumarioLevantamento.builder()
                     .entrevista(entrevista)
                     .contexto(node.path("contexto").asText())
@@ -211,6 +213,8 @@ public class EntrevistaService {
                     .restricoesPremissas(node.path("restricoesPremissas").asText())
                     .informacoesAusentes(node.path("informacoesAusentes").asText())
                     .conteudoCompleto(json)
+                    .suficiencia(suficiencia)
+                    .avaliacaoSuficiencia(avaliacaoSuficiencia)
                     .build();
         } catch (Exception e) {
             log.warn("Falha ao parsear JSON do sumário, salvando como texto bruto");

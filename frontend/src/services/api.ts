@@ -118,6 +118,14 @@ export function avaliarSmartRequisito(id: string) {
   return api.post(`/requisitos/${id}/avaliar-smart`)
 }
 
+export function checklistCobertura(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/requisitos/checklist-cobertura`)
+}
+
+export function detectarDuplicatas(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/requisitos/detectar-duplicatas`)
+}
+
 // --- Exportação DOCX / PDF ---
 
 export async function exportarDocx(demandaId: string): Promise<void> {
