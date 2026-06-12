@@ -16,7 +16,7 @@ import type {
   PapelStakeholder, StatusDemanda,
 } from '../types/demanda'
 
-type Tab = 'dados' | 'stakeholders' | 'historico'
+type Tab = 'dados' | 'stakeholders' | 'pipeline' | 'historico'
 
 const papelLabel: Record<PapelStakeholder, string> = {
   PATROCINADOR: 'Patrocinador', GESTOR_DEMANDANTE: 'Gestor Demandante',
@@ -54,7 +54,7 @@ export function DetalheDemandaPage() {
   const navigate = useNavigate()
   const [demanda, setDemanda] = useState<DemandaDetail | null>(null)
   const [historico, setHistorico] = useState<PageResponse<HistoricoItem> | null>(null)
-  const [tab, setTab] = useState<Tab>('dados')
+  const [tab, setTab] = useState<Tab>('pipeline')
   const [editMode, setEditMode] = useState(false)
   const [showStakeholderModal, setShowStakeholderModal] = useState(false)
   const [removendoId, setRemovendoId] = useState<string | null>(null)
@@ -158,34 +158,6 @@ export function DetalheDemandaPage() {
         <span className="text-sm font-medium text-slate-700 truncate flex-1">{demanda.titulo}</span>
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => navigate(`/demandas/${id}/canvas`)}
-            className="flex items-center gap-1 px-3 py-1.5 border border-teal-200 text-teal-700 rounded-lg text-xs font-medium hover:bg-teal-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-            </svg>
-            Canvas
-          </button>
-          <button onClick={() => navigate(`/demandas/${id}/requisitos`)}
-            className="flex items-center gap-1 px-3 py-1.5 border border-indigo-200 text-indigo-700 rounded-lg text-xs font-medium hover:bg-indigo-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-            Requisitos
-          </button>
-          <button onClick={() => navigate(`/demandas/${id}/backlog`)}
-            className="flex items-center gap-1 px-3 py-1.5 border border-emerald-200 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-            </svg>
-            Backlog
-          </button>
-          <button onClick={() => navigate(`/demandas/${id}/artefatos`)}
-            className="flex items-center gap-1 px-3 py-1.5 border border-orange-200 text-orange-700 rounded-lg text-xs font-medium hover:bg-orange-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-            </svg>
-            Artefatos
-          </button>
           <button onClick={handleIniciarEntrevista} disabled={iniciando}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 disabled:opacity-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -315,13 +287,14 @@ export function DetalheDemandaPage() {
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex-1">
           {/* Tab bar */}
           <div className="flex border-b border-slate-200 bg-slate-50/50 px-4">
-            {(['dados', 'stakeholders', 'historico'] as Tab[]).map((t) => (
+            {(['dados', 'stakeholders', 'pipeline', 'historico'] as Tab[]).map((t) => (
               <button key={t} onClick={() => { setTab(t); setEditMode(false) }}
-                className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                className={`px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
                   tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'
                 }`}>
                 {t === 'dados' && 'Dados Gerais'}
                 {t === 'stakeholders' && <>Stakeholders{demanda.stakeholders.length > 0 && <span className="ml-1.5 text-[11px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-semibold">{demanda.stakeholders.length}</span>}</>}
+                {t === 'pipeline' && 'Pipeline de Módulos'}
                 {t === 'historico' && 'Histórico'}
               </button>
             ))}
@@ -362,6 +335,253 @@ export function DetalheDemandaPage() {
                 onCancel={() => setEditMode(false)}
                 submitLabel="Salvar Alterações"
               />
+            )}
+
+            {/* Pipeline de Módulos */}
+            {tab === 'pipeline' && (
+              <div>
+                <p className="text-sm text-slate-500 mb-5">
+                  Acesse os módulos de análise e especificação para esta demanda.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* M2 — Entrevista Inteligente */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M2</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Entrevista Inteligente</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Assistente conversacional com IA para elicitação de requisitos</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleIniciarEntrevista}
+                      disabled={iniciando}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium disabled:opacity-50"
+                      aria-label="Iniciar entrevista inteligente"
+                    >
+                      {iniciando ? 'Iniciando…' : 'Iniciar Entrevista →'}
+                    </button>
+                  </div>
+
+                  {/* M3 — Canvas */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M3</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Canvas do Projeto</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Geração automática do canvas de projeto</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/canvas`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Canvas do Projeto"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M4 — Requisitos */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M4</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Especificação de Requisitos</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">RF, RNF, RN, RI e RS com avaliação SMART</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/requisitos`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Especificação de Requisitos"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M5 — Backlog */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M5</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Histórias de Usuário e Backlog</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Épicos, features e histórias com critérios de aceitação</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/backlog`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Histórias de Usuário e Backlog"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M6 — Casos de Uso */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M6</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Casos de Uso</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Fluxos principal, alternativo e de exceção</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/casos-de-uso`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Casos de Uso"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M7 — Modelagem */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M7</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Modelagem de Processos</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">BPMN, Mermaid e fluxogramas</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/modelagem`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Modelagem de Processos"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M8 — Prototipação */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M8</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Prototipação Assistida</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Wireframes, telas e fluxo de navegação</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/prototipo`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Prototipação Assistida"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M9 — Arquitetura */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M9</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Arquitetura de Solução</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Visão técnica, componentes e decisões arquiteturais</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/arquitetura`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Arquitetura de Solução"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M10 — Estimativas */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M10</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Estimativas</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Story points, horas, prazo e alocação de recursos</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/estimativas`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Estimativas"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M11 — Governança */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M11</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Governança</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Matriz RACI, dependências, premissas e riscos</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/governanca`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Governança"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M12 — Conformidade */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M12</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Conformidade e Qualidade</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">LGPD, segurança e acessibilidade WCAG</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/conformidade`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Conformidade e Qualidade"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* M14 — Agentes IA */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">M14</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Agentes Especializados</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">7 agentes de IA com papéis distintos para consultoria especializada</p>
+                      </div>
+                    </div>
+                    <button onClick={() => navigate(`/demandas/${id}/agentes`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Agentes Especializados">
+                      Abrir →
+                    </button>
+                  </div>
+
+                  {/* Artefatos */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800">Artefatos</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Repositório de documentos e arquivos anexados</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/demandas/${id}/artefatos`)}
+                      className="mt-3 w-full text-xs text-blue-600 border border-blue-200 rounded-lg py-1.5 hover:bg-blue-50 transition-colors font-medium"
+                      aria-label="Abrir Artefatos"
+                    >
+                      Abrir →
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Stakeholders */}

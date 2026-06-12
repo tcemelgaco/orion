@@ -93,6 +93,45 @@ public class OpenAIClient {
         }
     }
 
+    public String embedding(String texto) {
+        try {
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("model", properties.embeddingModel());
+            requestBody.put("input", texto);
+            String body = objectMapper.writeValueAsString(requestBody);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(properties.baseUrl() + "/v1/embeddings"))
+                    .header("Authorization", "Bearer " + properties.apiKey())
+                    .header("Content-Type", "application/json")
+                    .timeout(Duration.ofSeconds(30))
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                log.error("OpenAI Embeddings API retornou status {}", response.statusCode());
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "Erro na geração de embedding (status " + response.statusCode() + ")");
+            }
+
+            JsonNode root = objectMapper.readTree(response.body());
+            JsonNode embeddingArray = root.path("data").get(0).path("embedding");
+            if (!embeddingArray.isArray()) {
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "Resposta inválida da OpenAI Embeddings: campo 'embedding' ausente.");
+            }
+
+            int usage = root.path("usage").path("total_tokens").asInt(0);
+            log.debug("Embedding gerado. tokens_usados={}", usage);
+
+            return objectMapper.writeValueAsString(embeddingArray);
+        } catch (IOException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Erro ao gerar embedding via OpenAI API", e);
+        }
+    }
+
     private String buildRequestBody(List<ChatMessage> mensagens, boolean stream) {
         try {
             ObjectNode root = objectMapper.createObjectNode();

@@ -59,11 +59,91 @@ function IconArtefatos() {
   )
 }
 
+function IconCasosDeUso() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
+    </svg>
+  )
+}
+
+function IconModelagem() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+    </svg>
+  )
+}
+
+function IconArquitetura() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" />
+    </svg>
+  )
+}
+
+function IconEstimativas() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  )
+}
+
+function IconGovernanca() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+    </svg>
+  )
+}
+
+function IconConformidade() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+    </svg>
+  )
+}
+
+function IconPrototipo() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+    </svg>
+  )
+}
+
+function IconConhecimento() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+    </svg>
+  )
+}
+
+function IconAgentes() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+    </svg>
+  )
+}
+
 const MODULE_ITEMS = [
-  { path: 'canvas',     label: 'Canvas',             mod: 'M3', Icon: IconCanvas },
-  { path: 'requisitos', label: 'Especificação',       mod: 'M4', Icon: IconRequisitos },
-  { path: 'backlog',    label: 'Histórias de Usuário', mod: 'M5', Icon: IconBacklog },
-  { path: 'artefatos',  label: 'Artefatos',           mod: '',   Icon: IconArtefatos },
+  { path: 'canvas',        label: 'Canvas',              mod: 'M3',  Icon: IconCanvas },
+  { path: 'requisitos',    label: 'Especificação',        mod: 'M4',  Icon: IconRequisitos },
+  { path: 'backlog',       label: 'Histórias de Usuário', mod: 'M5',  Icon: IconBacklog },
+  { path: 'casos-de-uso',  label: 'Casos de Uso',         mod: 'M6',  Icon: IconCasosDeUso },
+  { path: 'modelagem',     label: 'Modelagem BPMN',       mod: 'M7',  Icon: IconModelagem },
+  { path: 'prototipo',     label: 'Prototipação',         mod: 'M8',  Icon: IconPrototipo },
+  { path: 'arquitetura',   label: 'Arquitetura',          mod: 'M9',  Icon: IconArquitetura },
+  { path: 'estimativas',   label: 'Estimativas',          mod: 'M10', Icon: IconEstimativas },
+  { path: 'governanca',    label: 'Governança',           mod: 'M11', Icon: IconGovernanca },
+  { path: 'conformidade',  label: 'Conformidade',         mod: 'M12', Icon: IconConformidade },
+  { path: 'agentes',       label: 'Agentes IA',           mod: 'M14', Icon: IconAgentes },
+  { path: 'artefatos',     label: 'Artefatos',            mod: '',    Icon: IconArtefatos },
 ]
 
 const navLink = ({ isActive }: { isActive: boolean }) =>
@@ -77,8 +157,8 @@ export function Sidebar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  // Detect /demandas/:demandaId/(canvas|requisitos|backlog|artefatos)
-  const moduleMatch = pathname.match(/^\/demandas\/([^/]+)\/(canvas|requisitos|backlog|artefatos)$/)
+  // Detect /demandas/:demandaId/(module)
+  const moduleMatch = pathname.match(/^\/demandas\/([^/]+)\/(canvas|requisitos|backlog|artefatos|casos-de-uso|modelagem|prototipo|arquitetura|estimativas|governanca|conformidade|agentes)$/)
   const demandaId = moduleMatch ? moduleMatch[1] : null
 
   return (
@@ -147,6 +227,13 @@ export function Sidebar() {
                     <IconDemandas />
                     <span className="flex-1 truncate">Gestão de Demandas</span>
                     <span className="text-[9px] font-bold text-blue-400 bg-blue-900/40 px-1.5 py-0.5 rounded">M1</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/conhecimento" className={navLink}>
+                    <IconConhecimento />
+                    <span className="flex-1 truncate">Base de Conhecimento</span>
+                    <span className="text-[9px] font-bold text-blue-400 bg-blue-900/40 px-1.5 py-0.5 rounded">M13</span>
                   </NavLink>
                 </li>
               </ul>

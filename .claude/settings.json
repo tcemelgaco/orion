@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8096"
+  },
   "permissions": {
     "allow": [
       "Bash(git:*)",
@@ -20,7 +23,34 @@
       "Bash(grep:*)",
       "Bash(curl:*)",
       "Bash(chmod:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "PowerShell($env:PGPASSWORD=\"postgres\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\" -U postgres -c \"\\\\l\" 2>&1; $env:PGPASSWORD=\"\")",
+      "PowerShell($env:DB_PASSWORD; $env:DB_USERNAME; $env:PGPASSWORD)",
+      "PowerShell($env:DB_PASSWORD)",
+      "PowerShell($env:DB_USERNAME)",
+      "PowerShell($env:PGPASSWORD)",
+      "PowerShell($env:PGPASSWORD=\"ailer@dev\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\" -U postgres -c \"\\\\l\" 2>&1; $env:PGPASSWORD=\"\")",
+      "PowerShell(docker compose -f \"C:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\docker-compose.yml\" ps 2>&1)",
+      "PowerShell(docker exec orion-postgres-1 psql -U postgres -d ailer_dev -c \"SELECT version, description, installed_on, success FROM flyway_schema_history ORDER BY installed_rank;\" 2>&1)",
+      "PowerShell(docker exec orion-postgres-1 psql -U ailer -d ailer_dev -c \"SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank;\" 2>&1)",
+      "PowerShell(docker exec orion-postgres-1 psql -U ailer_dev -d ailer_dev -c \"SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank;\" 2>&1)",
+      "PowerShell(docker exec orion-postgres-1 psql -U ailer_dev -d ailer_dev -c \"\\\\dt\" 2>&1)",
+      "PowerShell(head -5)",
+      "PowerShell(docker exec orion-backend-1 ls /app 2>&1)",
+      "PowerShell($resp = Invoke-WebRequest -Uri \"http://localhost:8080/api-docs\" -Headers @{Authorization = \"Basic \" + [Convert]::ToBase64String\\([Text.Encoding]::ASCII.GetBytes\\(\"analista:ailer@dev\"\\)\\)} -UseBasicParsing; $resp.Content | Select-String \"requisito|backlog|exporta|Módulo 4|Módulo 5\" | Select-Object -First 10)",
+      "PowerShell($resp = Invoke-WebRequest -Uri \"http://localhost:8080/api-docs\" -Headers @{Authorization = \"Basic \" + [Convert]::ToBase64String\\([Text.Encoding]::ASCII.GetBytes\\(\"analista:ailer@dev\"\\)\\)} -UseBasicParsing; \\($resp.Content | ConvertFrom-Json\\).tags | ForEach-Object { $_.name })",
+      "PowerShell($resp = Invoke-WebRequest -Uri \"http://localhost:8080/api-docs\" -Headers @{Authorization = \"Basic \" + [Convert]::ToBase64String\\([Text.Encoding]::ASCII.GetBytes\\(\"analista:ailer@dev\"\\)\\)} -UseBasicParsing; $json = $resp.Content | ConvertFrom-Json; $json.paths.PSObject.Properties.Name | Select-Object -First 30)",
+      "PowerShell(docker exec orion-postgres-1 psql -U ailer_dev -d ailer_dev -c \"SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name != 'flyway_schema_history' ORDER BY table_name;\" 2>&1)",
+      "PowerShell(Get-ChildItem -Path \"backend\\\\src\\\\main\\\\java\\\\br\\\\gov\\\\tce\\\\ailer\\\\modulo1\" -Recurse | Where-Object {$_.Extension -eq \".java\"} | Select-Object FullName | ForEach-Object {$_.FullName})",
+      "Bash(timeout 15 bash -c \"until docker compose logs backend 2>&1 | grep -q 'Started AilerBackend'; do sleep 1; done\")",
+      "Bash(dir /B \"c:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\backend\\\\src\\\\main\\\\java\\\\br\\\\gov\\\\tce\\\\ailer\")",
+      "PowerShell(docker compose -f \"C:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\docker-compose.yml\" logs backend --tail 20 2>&1)",
+      "PowerShell(Rename-Item -Path \"c:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\backend\\\\src\\\\main\\\\resources\\\\db\\\\migration\\\\V8__init_repositorio_artefatos.sql\" -NewName \"V9__init_repositorio_artefatos.sql\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\backend\\\\src\\\\main\\\\resources\\\\db\\\\migration\\\\V8__add_smart_invest_scores.sql\" \"V9__add_smart_invest_scores.sql\")",
+      "PowerShell(Rename-Item -Path \"c:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\backend\\\\src\\\\main\\\\resources\\\\db\\\\migration\\\\V9__init_repositorio_artefatos.sql\" -NewName \"V10__init_repositorio_artefatos.sql\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(m.upper\\(\\), p\\) for p,v in d['paths'].items\\(\\) for m in v if 'artefato' in p.lower\\(\\) or 'artefatos' in p.lower\\(\\)]\")",
+      "Bash(Start-Sleep -Seconds 12)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'OK — {d[\\\\\"totalElements\\\\\"]} demandas'\\)\")"
     ],
     "deny": [
       "Bash(rm -rf /*)",
@@ -30,8 +60,5 @@
       "Bash(kubectl delete cluster:*)",
       "Bash(DROP DATABASE:*)"
     ]
-  },
-  "env": {
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8096"
   }
 }
