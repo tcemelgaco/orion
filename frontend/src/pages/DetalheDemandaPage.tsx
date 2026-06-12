@@ -8,6 +8,7 @@ import { StakeholderModal } from '../components/demandas/StakeholderModal'
 import {
   buscarDemanda, atualizarDemanda, excluirDemanda,
   adicionarStakeholder, removerStakeholder, buscarHistorico, criarEntrevista,
+  exportarDocx, exportarPdf,
 } from '../services/api'
 import type {
   DemandaDetail, HistoricoItem, PageResponse,
@@ -60,6 +61,8 @@ export function DetalheDemandaPage() {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [iniciando, setIniciando] = useState(false)
   const [alterandoStatus, setAlterandoStatus] = useState(false)
+  const [exportando, setExportando] = useState<'docx' | 'pdf' | null>(null)
+  const [showExportMenu, setShowExportMenu] = useState(false)
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -107,6 +110,16 @@ export function DetalheDemandaPage() {
     try { const r = await criarEntrevista(id); navigate(`/entrevistas/${r.data.id}`) }
     catch { setErro('Erro ao iniciar entrevista.'); setIniciando(false) }
   }
+  async function handleExportar(tipo: 'docx' | 'pdf') {
+    if (!id) return
+    setExportando(tipo)
+    setShowExportMenu(false)
+    try {
+      if (tipo === 'docx') await exportarDocx(id)
+      else await exportarPdf(id)
+    } catch { setErro(`Erro ao exportar ${tipo.toUpperCase()}.`) }
+    finally { setExportando(null) }
+  }
 
   if (loading) return (
     <AppLayout>
@@ -152,6 +165,27 @@ export function DetalheDemandaPage() {
             </svg>
             Canvas
           </button>
+          <button onClick={() => navigate(`/demandas/${id}/requisitos`)}
+            className="flex items-center gap-1 px-3 py-1.5 border border-indigo-200 text-indigo-700 rounded-lg text-xs font-medium hover:bg-indigo-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            Requisitos
+          </button>
+          <button onClick={() => navigate(`/demandas/${id}/backlog`)}
+            className="flex items-center gap-1 px-3 py-1.5 border border-emerald-200 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+            Backlog
+          </button>
+          <button onClick={() => navigate(`/demandas/${id}/artefatos`)}
+            className="flex items-center gap-1 px-3 py-1.5 border border-orange-200 text-orange-700 rounded-lg text-xs font-medium hover:bg-orange-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+            Artefatos
+          </button>
           <button onClick={handleIniciarEntrevista} disabled={iniciando}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 disabled:opacity-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -159,6 +193,49 @@ export function DetalheDemandaPage() {
             </svg>
             {iniciando ? 'Iniciando…' : 'Iniciar Entrevista'}
           </button>
+          {/* Export dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowExportMenu(v => !v)}
+              disabled={exportando !== null}
+              className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 disabled:opacity-60 transition-colors"
+            >
+              {exportando ? (
+                <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+              )}
+              {exportando ? `Exportando ${exportando.toUpperCase()}…` : 'Exportar'}
+              {!exportando && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 ml-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              )}
+            </button>
+            {showExportMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 min-w-[140px] overflow-hidden">
+                <button onClick={() => handleExportar('docx')}
+                  className="flex items-center gap-2 w-full px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                  Exportar DOCX
+                </button>
+                <button onClick={() => handleExportar('pdf')}
+                  className="flex items-center gap-2 w-full px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                  Exportar PDF
+                </button>
+              </div>
+            )}
+          </div>
           <button onClick={() => { setEditMode(true); setTab('dados') }}
             className="flex items-center gap-1 px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
