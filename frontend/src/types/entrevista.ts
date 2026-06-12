@@ -29,5 +29,7 @@ export interface Sumario {
   restricoesPremissas: string
   informacoesAusentes: string
   conteudoCompleto: string
+  suficiencia: number | null
+  avaliacaoSuficiencia: string | null
   criadoEm: string
 }

@@ -1,6 +1,10 @@
 spring:
   application:
     name: ailer-backend
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 55MB
   jpa:
     open-in-view: false
     hibernate:
@@ -23,6 +27,7 @@ openai:
   model: gpt-4o
   temperature: 0.3
   max-tokens: 2000
+  embedding-model: text-embedding-3-small
 
 management:
   endpoints:

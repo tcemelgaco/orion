@@ -45,11 +45,18 @@ public class SumarioLevantamento extends BaseEntity {
     @Column(name = "conteudo_completo", columnDefinition = "TEXT", nullable = false)
     private String conteudoCompleto;
 
+    @Column(name = "suficiencia")
+    private Integer suficiencia;
+
+    @Column(name = "avaliacao_suficiencia", columnDefinition = "TEXT")
+    private String avaliacaoSuficiencia;
+
     @Builder
     public SumarioLevantamento(Entrevista entrevista, String contexto, String usuariosIdentificados,
                                 String processoAtual, String necessidades, String regrasNegocio,
                                 String integracoes, String restricoesPremissas,
-                                String informacoesAusentes, String conteudoCompleto) {
+                                String informacoesAusentes, String conteudoCompleto,
+                                Integer suficiencia, String avaliacaoSuficiencia) {
         this.entrevista = entrevista;
         this.contexto = contexto;
         this.usuariosIdentificados = usuariosIdentificados;
@@ -60,5 +67,7 @@ public class SumarioLevantamento extends BaseEntity {
         this.restricoesPremissas = restricoesPremissas;
         this.informacoesAusentes = informacoesAusentes;
         this.conteudoCompleto = conteudoCompleto;
+        this.suficiencia = suficiencia;
+        this.avaliacaoSuficiencia = avaliacaoSuficiencia;
     }
 }

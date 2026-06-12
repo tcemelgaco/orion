@@ -5,10 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EntrevistaRepository extends JpaRepository<Entrevista, UUID> {
 
     @Query("SELECT e FROM Entrevista e WHERE e.demanda.id = :demandaId ORDER BY e.criadoEm DESC")
     List<Entrevista> findByDemandaId(UUID demandaId);
+
+    @Query("SELECT e FROM Entrevista e JOIN FETCH e.demanda LEFT JOIN FETCH e.mensagens WHERE e.id = :id")
+    Optional<Entrevista> findByIdWithDetails(UUID id);
 }

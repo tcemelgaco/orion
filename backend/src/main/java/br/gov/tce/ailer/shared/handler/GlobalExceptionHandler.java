@@ -6,11 +6,13 @@ import br.gov.tce.ailer.shared.exception.RecursoNaoEncontradoException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -40,6 +42,15 @@ public class GlobalExceptionHandler {
                 })
                 .toList();
         return ErroResponse.ofCampos(400, "Dados inválidos na requisição", req.getRequestURI(), campos);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErroResponse> handleResponseStatus(ResponseStatusException ex, HttpServletRequest req) {
+        int status = ex.getStatusCode().value();
+        String titulo = ex.getStatusCode() instanceof HttpStatus hs ? hs.getReasonPhrase() : "Erro";
+        String mensagem = ex.getReason() != null ? ex.getReason() : ex.getMessage();
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(ErroResponse.of(status, titulo, mensagem, req.getRequestURI()));
     }
 
     @ExceptionHandler(Exception.class)

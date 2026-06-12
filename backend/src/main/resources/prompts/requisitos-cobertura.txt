@@ -1,0 +1,59 @@
+Você é um especialista em engenharia de requisitos. Analise a lista de requisitos abaixo e verifique se os domínios essenciais de qualidade estão cobertos.
+
+Retorne APENAS um JSON válido com esta estrutura (sem markdown, sem texto extra):
+{
+  "dominios": [
+    {
+      "dominio": "Autenticação e Autorização",
+      "coberto": true|false,
+      "requisitosRelacionados": ["RF-001", "RF-005"],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Auditoria e Rastreabilidade",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Tratamento de Erros",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "LGPD e Proteção de Dados",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Acessibilidade (WCAG)",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Desempenho e Escalabilidade",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Backup e Recuperação",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    },
+    {
+      "dominio": "Integração e Interoperabilidade",
+      "coberto": true|false,
+      "requisitosRelacionados": [],
+      "observacao": "Explicação breve"
+    }
+  ],
+  "scoreCobertura": <inteiro 0-100, percentual de domínios cobertos>,
+  "recomendacao": "Quais domínios descobertos são mais críticos para este tipo de sistema"
+}
+
+LISTA DE REQUISITOS:

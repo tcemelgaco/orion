@@ -68,7 +68,7 @@ public class EntrevistaService {
         salvarMensagem(entrevista, RoleMensagem.SYSTEM, systemPrompt + "\n\n" + contextoDemanda);
 
         log.info("Entrevista iniciada: id={}, demanda={}", entrevista.getId(), demandaId);
-        return EntrevistaResponse.from(entrevista);
+        return EntrevistaResponse.from(encontrarEntrevistaComDetalhes(entrevista.getId()));
     }
 
     public SseEmitter enviarMensagem(UUID entrevistaId, EnviarMensagemRequest req) {
@@ -91,12 +91,12 @@ public class EntrevistaService {
 
     @Transactional(readOnly = true)
     public EntrevistaResponse buscar(UUID id) {
-        return EntrevistaResponse.from(encontrarEntrevista(id));
+        return EntrevistaResponse.from(encontrarEntrevistaComDetalhes(id));
     }
 
     @Transactional
     public SumarioResponse consolidar(UUID entrevistaId) {
-        Entrevista entrevista = encontrarEntrevista(entrevistaId);
+        Entrevista entrevista = encontrarEntrevistaComDetalhes(entrevistaId);
 
         if (entrevista.getStatus() == StatusEntrevista.CANCELADA) {
             throw new BusinessException("Entrevista cancelada não pode ser consolidada.");
@@ -138,7 +138,7 @@ public class EntrevistaService {
 
         salvarMensagem(entrevista, RoleMensagem.USER, conteudoUsuario);
 
-        List<ChatMessage> historico = entrevista.getMensagens().stream()
+        List<ChatMessage> historico = mensagemRepository.findByEntrevistaIdOrderByCriadoEmAsc(entrevistaId).stream()
                 .map(m -> new ChatMessage(m.getRole().name().toLowerCase(), m.getConteudo()))
                 .toList();
 
@@ -179,6 +179,11 @@ public class EntrevistaService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Entrevista", id));
     }
 
+    private Entrevista encontrarEntrevistaComDetalhes(UUID id) {
+        return entrevistaRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Entrevista", id));
+    }
+
     private String construirTranscricao(Entrevista entrevista) {
         StringBuilder sb = new StringBuilder();
         entrevista.getMensagens().stream()
@@ -195,6 +200,8 @@ public class EntrevistaService {
                 jsonLimpo = jsonLimpo.replaceAll("```json\\n?", "").replaceAll("```\\n?", "").trim();
             }
             JsonNode node = objectMapper.readTree(jsonLimpo);
+            int suficiencia = node.path("suficiencia").isMissingNode() ? 50 : node.path("suficiencia").asInt(50);
+            String avaliacaoSuficiencia = node.path("avaliacaoSuficiencia").asText(null);
             return SumarioLevantamento.builder()
                     .entrevista(entrevista)
                     .contexto(node.path("contexto").asText())
@@ -206,6 +213,8 @@ public class EntrevistaService {
                     .restricoesPremissas(node.path("restricoesPremissas").asText())
                     .informacoesAusentes(node.path("informacoesAusentes").asText())
                     .conteudoCompleto(json)
+                    .suficiencia(suficiencia)
+                    .avaliacaoSuficiencia(avaliacaoSuficiencia)
                     .build();
         } catch (Exception e) {
             log.warn("Falha ao parsear JSON do sumário, salvando como texto bruto");

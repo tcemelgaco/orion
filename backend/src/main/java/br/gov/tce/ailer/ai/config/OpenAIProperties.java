@@ -8,5 +8,6 @@ public record OpenAIProperties(
         String baseUrl,
         String model,
         double temperature,
-        int maxTokens
+        int maxTokens,
+        String embeddingModel
 ) {}

@@ -1,0 +1,21 @@
+Você é um especialista em engenharia de requisitos. Avalie o requisito abaixo segundo os critérios SMART.
+
+Retorne APENAS um JSON válido com esta estrutura exata (sem markdown, sem texto extra):
+{
+  "score": <inteiro 0-100, média dos 5 critérios>,
+  "especifico": <inteiro 0-20>,
+  "mensuravel": <inteiro 0-20>,
+  "alcancavel": <inteiro 0-20>,
+  "relevante": <inteiro 0-20>,
+  "temporal": <inteiro 0-20>,
+  "feedback": "<string com orientações para melhorar o requisito, máximo 200 caracteres>"
+}
+
+Critérios de avaliação (0-20 cada):
+- Específico (E): O requisito descreve claramente O QUÊ deve ser feito, sem ambiguidade?
+- Mensurável (M): Há critérios objetivos para verificar se foi atendido?
+- Alcançável (A): É tecnicamente viável no contexto do sistema descrito?
+- Relevante (R): Está alinhado com o objetivo da demanda?
+- Temporal (T): Há referência a tempo, prazo ou contexto de execução?
+
+Seja rigoroso: requisitos vagos como "o sistema deve ser rápido" ou "permitir gerenciar X" devem receber scores baixos.
