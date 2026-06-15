@@ -26,6 +26,9 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class OpenAIClient {
 
+    private static final int MAX_TENTATIVAS = 3;
+    private static final long BACKOFF_BASE_MS = 1_000;
+
     private final OpenAIProperties properties;
     private final ObjectMapper objectMapper;
 
@@ -41,7 +44,7 @@ public class OpenAIClient {
                     .header("Authorization", "Bearer " + properties.apiKey())
                     .header("Content-Type", "application/json")
                     .header("Accept", "text/event-stream")
-                    .timeout(Duration.ofSeconds(90))
+                    .timeout(Duration.ofSeconds(30))
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
@@ -56,41 +59,16 @@ public class OpenAIClient {
     }
 
     public String chat(List<ChatMessage> mensagens) {
-        try {
-            String body = buildRequestBody(mensagens, false);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(properties.baseUrl() + "/v1/chat/completions"))
-                    .header("Authorization", "Bearer " + properties.apiKey())
-                    .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(60))
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
+        String body = buildRequestBody(mensagens, false);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(properties.baseUrl() + "/v1/chat/completions"))
+                .header("Authorization", "Bearer " + properties.apiKey())
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(30))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                log.error("OpenAI API retornou status {}: {}", response.statusCode(), response.body());
-                if (response.statusCode() == 429) {
-                    boolean quotaEsgotada = response.body().contains("insufficient_quota");
-                    String msg = quotaEsgotada
-                            ? "Cota da OpenAI esgotada. Adicione créditos em platform.openai.com/settings/billing."
-                            : "Limite de requisições da OpenAI atingido. Aguarde alguns instantes e tente novamente.";
-                    throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, msg);
-                }
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
-                        "Erro na comunicação com a OpenAI (status " + response.statusCode() + ")");
-            }
-            JsonNode root = objectMapper.readTree(response.body());
-            JsonNode choices = root.path("choices");
-            if (!choices.isArray() || choices.isEmpty()) {
-                log.error("Resposta OpenAI sem choices: {}", response.body());
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
-                        "Resposta inválida da OpenAI: sem conteúdo gerado.");
-            }
-            return choices.get(0).path("message").path("content").asText();
-        } catch (IOException | InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Erro ao comunicar com OpenAI API", e);
-        }
+        return executeComRetry(request, "chat");
     }
 
     public float[] embedding(String texto) {
@@ -108,12 +86,8 @@ public class OpenAIClient {
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                log.error("OpenAI Embeddings API retornou status {}", response.statusCode());
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
-                        "Erro na geração de embedding (status " + response.statusCode() + ")");
-            }
+            HttpResponse<String> response = enviar(request);
+            validarStatus(response, "embeddings");
 
             JsonNode root = objectMapper.readTree(response.body());
             JsonNode embeddingArray = root.path("data").get(0).path("embedding");
@@ -123,16 +97,102 @@ public class OpenAIClient {
             }
 
             int usage = root.path("usage").path("total_tokens").asInt(0);
-            log.debug("Embedding gerado. tokens_usados={}, dimensoes={}", usage, embeddingArray.size());
+            log.info("openai.embedding model={} tokens={} dims={}",
+                    properties.embeddingModel(), usage, embeddingArray.size());
 
             float[] vetor = new float[embeddingArray.size()];
             for (int i = 0; i < embeddingArray.size(); i++) {
                 vetor[i] = (float) embeddingArray.get(i).asDouble();
             }
             return vetor;
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao gerar embedding via OpenAI API", e);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Erro ao gerar embedding via OpenAI API", e);
+        }
+    }
+
+    // ── Retry com backoff exponencial ────────────────────────────────────────
+
+    private String executeComRetry(HttpRequest request, String operacao) {
+        int tentativa = 0;
+        while (true) {
+            try {
+                HttpResponse<String> response = enviar(request);
+                if (deveRetry(response.statusCode()) && tentativa < MAX_TENTATIVAS - 1) {
+                    long espera = BACKOFF_BASE_MS * (1L << tentativa);
+                    log.warn("OpenAI {} status={} tentativa={}/{} aguardando {}ms",
+                            operacao, response.statusCode(), tentativa + 1, MAX_TENTATIVAS, espera);
+                    Thread.sleep(espera);
+                    tentativa++;
+                    continue;
+                }
+                validarStatus(response, operacao);
+                return extrairConteudo(response, operacao);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrompido aguardando retry OpenAI", e);
+            } catch (IOException e) {
+                if (tentativa < MAX_TENTATIVAS - 1) {
+                    long espera = BACKOFF_BASE_MS * (1L << tentativa);
+                    log.warn("OpenAI {} IOException tentativa={}/{} aguardando {}ms: {}",
+                            operacao, tentativa + 1, MAX_TENTATIVAS, espera, e.getMessage());
+                    try { Thread.sleep(espera); } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("Interrompido durante retry OpenAI", ie);
+                    }
+                    tentativa++;
+                } else {
+                    throw new RuntimeException("Erro ao comunicar com OpenAI API após " + MAX_TENTATIVAS + " tentativas", e);
+                }
+            }
+        }
+    }
+
+    private boolean deveRetry(int status) {
+        return status == 429 || status == 500 || status == 502 || status == 503 || status == 504;
+    }
+
+    private HttpResponse<String> enviar(HttpRequest request) throws IOException, InterruptedException {
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private void validarStatus(HttpResponse<String> response, String operacao) {
+        int status = response.statusCode();
+        if (status == 200) return;
+        log.error("OpenAI {} status={} body={}", operacao, status, response.body());
+        if (status == 429) {
+            boolean quotaEsgotada = response.body().contains("insufficient_quota");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    quotaEsgotada
+                            ? "Cota da OpenAI esgotada. Adicione créditos em platform.openai.com/settings/billing."
+                            : "Limite de requisições da OpenAI atingido. Tente novamente em instantes.");
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                "Erro na comunicação com a OpenAI (status " + status + ")");
+    }
+
+    private String extrairConteudo(HttpResponse<String> response, String operacao) {
+        try {
+            JsonNode root = objectMapper.readTree(response.body());
+            JsonNode choices = root.path("choices");
+            if (!choices.isArray() || choices.isEmpty()) {
+                log.error("OpenAI {} sem choices: {}", operacao, response.body());
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "Resposta inválida da OpenAI: sem conteúdo gerado.");
+            }
+            JsonNode usage = root.path("usage");
+            log.info("openai.chat model={} prompt_tokens={} completion_tokens={} total_tokens={}",
+                    properties.model(),
+                    usage.path("prompt_tokens").asInt(0),
+                    usage.path("completion_tokens").asInt(0),
+                    usage.path("total_tokens").asInt(0));
+            return choices.get(0).path("message").path("content").asText();
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao parsear resposta da OpenAI", e);
         }
     }
 

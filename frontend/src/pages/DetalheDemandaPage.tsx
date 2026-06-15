@@ -8,7 +8,7 @@ import { StakeholderModal } from '../components/demandas/StakeholderModal'
 import {
   buscarDemanda, atualizarDemanda, excluirDemanda,
   adicionarStakeholder, removerStakeholder, buscarHistorico, criarEntrevista,
-  exportarDocx, exportarPdf,
+  exportarDocx, exportarPdf, buscarCompletude,
 } from '../services/api'
 import type {
   DemandaDetail, HistoricoItem, PageResponse,
@@ -64,12 +64,14 @@ export function DetalheDemandaPage() {
   const [exportando, setExportando] = useState<'docx' | 'pdf' | null>(null)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [showModulosMenu, setShowModulosMenu] = useState(false)
+  const [completude, setCompletude] = useState<{ percentualConcluido: number; modulosConcluidos: number; totalModulos: number } | null>(null)
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
     buscarDemanda(id).then((r) => setDemanda(r.data)).catch(() => setErro('Demanda não encontrada.')).finally(() => setLoading(false))
+    buscarCompletude(id).then((r) => setCompletude(r.data)).catch(() => {})
   }, [id])
 
   useEffect(() => {
@@ -390,6 +392,23 @@ export function DetalheDemandaPage() {
             {/* Pipeline de Módulos */}
             {tab === 'pipeline' && (
               <div>
+                {completude && (
+                  <div className="mb-5 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-slate-700">Completude do Projeto</span>
+                      <span className="text-sm font-bold text-blue-700">{completude.percentualConcluido}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${completude.percentualConcluido}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1.5">
+                      {completude.modulosConcluidos} de {completude.totalModulos} módulos concluídos e publicados
+                    </p>
+                  </div>
+                )}
                 <p className="text-sm text-slate-500 mb-5">
                   Acesse os módulos de análise e especificação para esta demanda.
                 </p>

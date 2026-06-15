@@ -58,6 +58,10 @@ export function buscarHistorico(demandaId: string, page = 0) {
   return api.get(`/demandas/${demandaId}/historico`, { params: { page, size: 20 } })
 }
 
+export function buscarCompletude(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/completude`)
+}
+
 // --- Módulo 3: Canvas ---
 
 export function gerarCanvas(demandaId: string) {

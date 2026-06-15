@@ -4,9 +4,11 @@ import br.gov.tce.ailer.modulo1.domain.enums.StatusDemanda;
 import br.gov.tce.ailer.modulo1.dto.request.AdicionarStakeholderRequest;
 import br.gov.tce.ailer.modulo1.dto.request.AtualizarDemandaRequest;
 import br.gov.tce.ailer.modulo1.dto.request.CriarDemandaRequest;
+import br.gov.tce.ailer.modulo1.dto.response.CompletudeDemandaResponse;
 import br.gov.tce.ailer.modulo1.dto.response.DemandaResponse;
 import br.gov.tce.ailer.modulo1.dto.response.DemandaSummaryResponse;
 import br.gov.tce.ailer.modulo1.dto.response.StakeholderResponse;
+import br.gov.tce.ailer.modulo1.service.CompletudeDemandaService;
 import br.gov.tce.ailer.modulo1.service.DemandaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,7 @@ import java.util.UUID;
 public class DemandaController {
 
     private final DemandaService demandaService;
+    private final CompletudeDemandaService completudeDemandaService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,6 +81,12 @@ public class DemandaController {
     @Operation(summary = "Remover stakeholder da demanda")
     public void removerStakeholder(@PathVariable UUID id, @PathVariable UUID stakeholderId) {
         demandaService.removerStakeholder(id, stakeholderId);
+    }
+
+    @GetMapping("/{id}/completude")
+    @Operation(summary = "Indicador de completude: percentual de módulos concluídos e aprovados")
+    public CompletudeDemandaResponse completude(@PathVariable UUID id) {
+        return completudeDemandaService.calcular(id);
     }
 
     @GetMapping("/{id}/historico")
