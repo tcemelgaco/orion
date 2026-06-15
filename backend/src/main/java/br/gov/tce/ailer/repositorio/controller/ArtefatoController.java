@@ -40,7 +40,8 @@ public class ArtefatoController {
             @RequestPart(value = "descricao", required = false) String descricao,
             @AuthenticationPrincipal UserDetails user
     ) throws IOException {
-        return artefatoService.upload(demandaId, file, tipo, descricao, user.getUsername());
+        String responsavel = user != null ? user.getUsername() : "sistema";
+        return artefatoService.upload(demandaId, file, tipo, descricao, responsavel);
     }
 
     @GetMapping("/demandas/{demandaId}/artefatos")

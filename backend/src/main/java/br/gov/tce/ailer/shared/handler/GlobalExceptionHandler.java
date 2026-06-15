@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErroResponse handleGeneral(Exception ex, HttpServletRequest req) {
-        log.error("Erro inesperado: {}", ex.getMessage(), ex);
+        log.error("[{}] {} — path={}", ex.getClass().getSimpleName(), ex.getMessage(), req.getRequestURI(), ex);
         return ErroResponse.of(500, "Erro interno", "Ocorreu um erro inesperado. Tente novamente.", req.getRequestURI());
     }
 }
