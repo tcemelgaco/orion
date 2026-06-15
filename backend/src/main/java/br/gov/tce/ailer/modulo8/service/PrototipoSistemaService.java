@@ -7,6 +7,7 @@ import br.gov.tce.ailer.modulo1.repository.DemandaRepository;
 import br.gov.tce.ailer.modulo4.repository.RequisitoRepository;
 import br.gov.tce.ailer.modulo8.domain.PrototipoSistema;
 import br.gov.tce.ailer.modulo8.domain.enums.StatusPrototipo;
+import br.gov.tce.ailer.modulo8.dto.request.AtualizarPrototipoRequest;
 import br.gov.tce.ailer.modulo8.dto.response.PrototipoSistemaResponse;
 import br.gov.tce.ailer.modulo8.repository.PrototipoSistemaRepository;
 import br.gov.tce.ailer.shared.exception.BusinessException;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -68,17 +68,17 @@ public class PrototipoSistemaService {
     }
 
     @Transactional
-    public PrototipoSistemaResponse atualizarManual(UUID demandaId, Map<String, String> payload) {
+    public PrototipoSistemaResponse atualizarManual(UUID demandaId, AtualizarPrototipoRequest req) {
         PrototipoSistema p = findByDemanda(demandaId);
 
-        if (payload.containsKey("descricaoGeral"))       p.setDescricaoGeral(payload.get("descricaoGeral"));
-        if (payload.containsKey("telas"))                p.setTelas(payload.get("telas"));
-        if (payload.containsKey("fluxoNavegacao"))       p.setFluxoNavegacao(payload.get("fluxoNavegacao"));
-        if (payload.containsKey("componentesPrincipais")) p.setComponentesPrincipais(payload.get("componentesPrincipais"));
-        if (payload.containsKey("paleta"))               p.setPaleta(payload.get("paleta"));
-        if (payload.containsKey("diretrizes"))           p.setDiretrizes(payload.get("diretrizes"));
-        if (payload.containsKey("notasAcessibilidade"))  p.setNotasAcessibilidade(payload.get("notasAcessibilidade"));
-        if (payload.containsKey("tecnologiasSugeridas")) p.setTecnologiasSugeridas(payload.get("tecnologiasSugeridas"));
+        if (req.descricaoGeral() != null)       p.setDescricaoGeral(req.descricaoGeral());
+        if (req.telas() != null)                p.setTelas(req.telas());
+        if (req.fluxoNavegacao() != null)       p.setFluxoNavegacao(req.fluxoNavegacao());
+        if (req.componentesPrincipais() != null) p.setComponentesPrincipais(req.componentesPrincipais());
+        if (req.paleta() != null)               p.setPaleta(req.paleta());
+        if (req.diretrizes() != null)           p.setDiretrizes(req.diretrizes());
+        if (req.notasAcessibilidade() != null)  p.setNotasAcessibilidade(req.notasAcessibilidade());
+        if (req.tecnologiasSugeridas() != null) p.setTecnologiasSugeridas(req.tecnologiasSugeridas());
 
         p.setFonte("MANUAL");
         log.info("Protótipo da demanda {} atualizado manualmente", demandaId);

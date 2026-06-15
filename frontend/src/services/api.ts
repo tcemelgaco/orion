@@ -58,6 +58,10 @@ export function buscarHistorico(demandaId: string, page = 0) {
   return api.get(`/demandas/${demandaId}/historico`, { params: { page, size: 20 } })
 }
 
+export function buscarCompletude(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/completude`)
+}
+
 // --- Módulo 3: Canvas ---
 
 export function gerarCanvas(demandaId: string) {
@@ -539,4 +543,17 @@ export function streamMensagemAgente(
       onDone()
     })
     .catch((err: Error) => onError(err.message))
+}
+
+// ── GitLab Integration ────────────────────────────────────────────────────
+import type { GitLabConfigPayload } from '../types/gitlab'
+
+export function buscarGitLabConfig(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/gitlab/config`)
+}
+export function salvarGitLabConfig(demandaId: string, payload: GitLabConfigPayload) {
+  return api.put(`/demandas/${demandaId}/gitlab/config`, payload)
+}
+export function exportarParaGitLab(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/gitlab/exportar`)
 }

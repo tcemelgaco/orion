@@ -66,4 +66,13 @@ public class Epico extends BaseEntity {
 
     @Column(name = "aprovado_em")
     private OffsetDateTime aprovadoEm;
+
+    @Column(name = "gitlab_milestone_id")
+    private Integer gitlabMilestoneId;
+
+    @Column(name = "gitlab_milestone_url", length = 500)
+    private String gitlabMilestoneUrl;
+
+    @Column(name = "gitlab_exportado_em")
+    private java.time.LocalDateTime gitlabExportadoEm;
 }

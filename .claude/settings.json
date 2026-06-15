@@ -50,7 +50,15 @@
       "PowerShell(Rename-Item -Path \"c:\\\\Users\\\\huerbet.melgaco\\\\Desktop\\\\Projeto\\\\orion\\\\backend\\\\src\\\\main\\\\resources\\\\db\\\\migration\\\\V9__init_repositorio_artefatos.sql\" -NewName \"V10__init_repositorio_artefatos.sql\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(m.upper\\(\\), p\\) for p,v in d['paths'].items\\(\\) for m in v if 'artefato' in p.lower\\(\\) or 'artefatos' in p.lower\\(\\)]\")",
       "Bash(Start-Sleep -Seconds 12)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'OK — {d[\\\\\"totalElements\\\\\"]} demandas'\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'OK — {d[\\\\\"totalElements\\\\\"]} demandas'\\)\")",
+      "Bash(gh pr create --title 'feat\\(ailer\\): implementar plataforma completa AILER — Módulos 1 a 14 + redesenho UI' --body ' *)",
+      "Bash(xargs head -5)",
+      "Bash(cat frontend/vite.config.ts)",
+      "Bash(cat frontend/vite.config.js)",
+      "Bash(timeout 30 bash -c \"until docker compose exec backend wget -qO- http://localhost:8080/actuator/health 2>/dev/null | grep -q UP; do sleep 3; done\")",
+      "Bash(./mvnw test *)",
+      "Bash(cat backend/src/main/resources/application.yml)",
+      "Bash(cat backend/src/main/resources/application.properties)"
     ],
     "deny": [
       "Bash(rm -rf /*)",

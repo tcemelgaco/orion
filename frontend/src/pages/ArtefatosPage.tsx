@@ -115,8 +115,15 @@ export function ArtefatosPage() {
       await uploadArtefato(demandaId, modal.file, modal.tipo, modal.descricao)
       setModal(null)
       await carregar()
-    } catch {
-      setErro('Erro ao enviar arquivo. Verifique o tamanho (máx. 50 MB).')
+    } catch (err: unknown) {
+      const ax = err as { response?: { data?: { mensagem?: string }; status?: number } }
+      const serverMsg = ax?.response?.data?.mensagem
+      const status = ax?.response?.status
+      if (status === 413 || serverMsg?.toLowerCase().includes('tamanho')) {
+        setErro('Arquivo muito grande. Limite máximo: 50 MB.')
+      } else {
+        setErro(serverMsg ?? 'Erro ao enviar arquivo. Tente novamente.')
+      }
     } finally {
       setEnviando(false)
     }

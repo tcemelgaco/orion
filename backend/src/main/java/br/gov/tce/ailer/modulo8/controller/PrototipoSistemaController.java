@@ -1,5 +1,6 @@
 package br.gov.tce.ailer.modulo8.controller;
 
+import br.gov.tce.ailer.modulo8.dto.request.AtualizarPrototipoRequest;
 import br.gov.tce.ailer.modulo8.dto.response.PrototipoSistemaResponse;
 import br.gov.tce.ailer.modulo8.service.PrototipoSistemaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -37,8 +37,8 @@ public class PrototipoSistemaController {
     @Operation(summary = "Atualizar campos do protótipo manualmente")
     public ResponseEntity<PrototipoSistemaResponse> atualizarManual(
             @PathVariable UUID demandaId,
-            @RequestBody Map<String, String> payload) {
-        return ResponseEntity.ok(service.atualizarManual(demandaId, payload));
+            @RequestBody AtualizarPrototipoRequest request) {
+        return ResponseEntity.ok(service.atualizarManual(demandaId, request));
     }
 
     @PatchMapping("/revisar")

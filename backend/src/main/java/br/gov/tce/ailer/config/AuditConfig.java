@@ -17,7 +17,9 @@ public class AuditConfig {
     public AuditorAware<String> auditorProvider() {
         return () -> {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth == null || !auth.isAuthenticated()) {
+            // AnonymousAuthenticationToken tem isAuthenticated()=true, mas name="anonymousUser"
+            if (auth == null || !auth.isAuthenticated()
+                    || "anonymousUser".equals(auth.getName())) {
                 return Optional.of("sistema");
             }
             return Optional.of(auth.getName());

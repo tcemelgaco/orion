@@ -29,6 +29,16 @@ openai:
   max-tokens: 2000
   embedding-model: text-embedding-3-small
 
+# Active Directory — obrigatório no perfil prod
+# Definir via variáveis de ambiente: AD_DOMAIN e AD_URL
+ad:
+  domain: ${AD_DOMAIN:tce.ce.gov.br}
+  url: ${AD_URL:ldap://dc.tce.ce.gov.br:389}
+
+# CORS — separado por vírgula; no dev o SecurityConfig já define localhost:5173
+cors:
+  allowed-origins: ${CORS_ORIGINS:https://ailer.tce.ce.gov.br}
+
 management:
   endpoints:
     web:

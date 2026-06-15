@@ -65,4 +65,13 @@ public class HistoriaUsuario extends BaseEntity {
 
     @Column(name = "invest_detalhes", columnDefinition = "TEXT")
     private String investDetalhes;
+
+    @Column(name = "gitlab_issue_iid")
+    private Integer gitlabIssueIid;
+
+    @Column(name = "gitlab_issue_url", length = 500)
+    private String gitlabIssueUrl;
+
+    @Column(name = "gitlab_exportado_em")
+    private java.time.LocalDateTime gitlabExportadoEm;
 }
