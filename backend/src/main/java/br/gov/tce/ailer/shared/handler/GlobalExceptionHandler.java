@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -27,9 +28,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
     public ErroResponse handleBusiness(BusinessException ex, HttpServletRequest req) {
         return ErroResponse.of(422, "Regra de negócio", ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    public ErroResponse handleMaxUploadSize(MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        return ErroResponse.of(413, "Arquivo muito grande", "O arquivo ultrapassa o limite de 50 MB.", req.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
