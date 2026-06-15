@@ -93,7 +93,7 @@ public class OpenAIClient {
         }
     }
 
-    public String embedding(String texto) {
+    public float[] embedding(String texto) {
         try {
             ObjectNode requestBody = objectMapper.createObjectNode();
             requestBody.put("model", properties.embeddingModel());
@@ -123,9 +123,13 @@ public class OpenAIClient {
             }
 
             int usage = root.path("usage").path("total_tokens").asInt(0);
-            log.debug("Embedding gerado. tokens_usados={}", usage);
+            log.debug("Embedding gerado. tokens_usados={}, dimensoes={}", usage, embeddingArray.size());
 
-            return objectMapper.writeValueAsString(embeddingArray);
+            float[] vetor = new float[embeddingArray.size()];
+            for (int i = 0; i < embeddingArray.size(); i++) {
+                vetor[i] = (float) embeddingArray.get(i).asDouble();
+            }
+            return vetor;
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Erro ao gerar embedding via OpenAI API", e);

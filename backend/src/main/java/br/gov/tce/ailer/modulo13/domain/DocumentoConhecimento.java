@@ -29,12 +29,11 @@ public class DocumentoConhecimento extends BaseEntity {
     @Column(length = 300)
     private String fonte;
 
-    /**
-     * Vetor de embedding serializado como JSON array string, ex.: "[0.123,0.456,...]".
-     * Tipo TEXT para evitar dependência de mapeamento pgvector em JPA.
-     */
+    // Armazenado como TEXT no formato "[0.1,0.2,...]" compatível com pgvector.
+    // O índice HNSW (V21) usa cast funcional embedding::vector(1536).
+    @Convert(converter = EmbeddingConverter.class)
     @Column(columnDefinition = "TEXT")
-    private String embedding;
+    private float[] embedding;
 
     @Column(name = "tokens_estimados")
     private Integer tokensEstimados;
@@ -42,7 +41,7 @@ public class DocumentoConhecimento extends BaseEntity {
     @Builder
     public DocumentoConhecimento(String titulo, String conteudo, String tipo,
                                  String tags, String fonte,
-                                 String embedding, Integer tokensEstimados) {
+                                 float[] embedding, Integer tokensEstimados) {
         this.titulo = titulo;
         this.conteudo = conteudo;
         this.tipo = tipo != null ? tipo : "DOCUMENTO";
