@@ -540,3 +540,16 @@ export function streamMensagemAgente(
     })
     .catch((err: Error) => onError(err.message))
 }
+
+// ── GitLab Integration ────────────────────────────────────────────────────
+import type { GitLabConfigPayload } from '../types/gitlab'
+
+export function buscarGitLabConfig(demandaId: string) {
+  return api.get(`/demandas/${demandaId}/gitlab/config`)
+}
+export function salvarGitLabConfig(demandaId: string, payload: GitLabConfigPayload) {
+  return api.put(`/demandas/${demandaId}/gitlab/config`, payload)
+}
+export function exportarParaGitLab(demandaId: string) {
+  return api.post(`/demandas/${demandaId}/gitlab/exportar`)
+}

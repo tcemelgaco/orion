@@ -13,4 +13,6 @@ public interface HistoriaUsuarioRepository extends JpaRepository<HistoriaUsuario
     List<HistoriaUsuario> findByDemandaIdOrderByOrdemExibicaoAsc(UUID demandaId);
 
     long countByFeatureId(UUID featureId);
+
+    List<HistoriaUsuario> findByFeature_EpicoIdOrderByOrdemExibicaoAsc(UUID epicoId);
 }
